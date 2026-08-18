@@ -1,0 +1,30 @@
+.trend-card { padding: 22px; margin-bottom: 28px; }
+
+table { width: 100%; border-collapse: collapse; }
+
+/* ĐÃ SỬA: Đổi padding từ "0 14px 10px" thành "20px 14px 12px" để đẩy text cách xa viền trên ra */
+th {
+    text-align: left;
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--ink-faint);
+    padding: 20px 14px 12px;
+    font-weight: 600;
+}
+
+td {
+    padding: 14px;
+    font-size: 14px;
+    border-top: 1px solid var(--line-soft);
+}
+
+tr td:first-child, th:first-child { padding-left: 20px; }
+tr td:last-child, th:last-child { padding-right: 20px; text-align: right; }
+
+.hist-job { font-weight: 600; }
+.hist-company { font-size: 12.5px; color: var(--ink-faint); }
+.hist-score { display: flex; align-items: center; gap: 10px; }
+
+.mini-dial { width: 36px; height: 36px; flex-shrink: 0; }
+.hist-score .num { font-family: var(--font-mono); font-weight: 600; }

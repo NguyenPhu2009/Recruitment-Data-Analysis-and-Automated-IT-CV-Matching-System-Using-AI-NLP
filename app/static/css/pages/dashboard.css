@@ -1,0 +1,26 @@
+.hero { padding: 56px 0 8px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 48px; align-items: center; }
+.hero h1 { font-size: 40px; line-height: 1.12; margin-bottom: 18px; }
+.hero p.lead { font-size: 16.5px; color: var(--ink-dim); max-width: 52ch; margin-bottom: 28px; }
+.hero-ctas { display: flex; gap: 12px; margin-bottom: 36px; flex-wrap: wrap; }
+.stat-row { display: flex; gap: 28px; flex-wrap: wrap; }
+.stat { border-left: 2px solid var(--teal); padding-left: 12px; }
+.stat .num { font-family: var(--font-mono); font-size: 22px; font-weight: 600; color: var(--ink); display: block; }
+.stat .lbl { font-size: 12.5px; color: var(--ink-faint); }
+.hero-visual { position: relative; height: 280px; display: flex; align-items: center; justify-content: center; }
+.hero-rings { position: relative; width: 260px; height: 260px; }
+.hero-rings svg { position: absolute; inset: 0; }
+.hero-rings .core { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.hero-rings .core .n { font-family: var(--font-mono); font-size: 30px; font-weight: 600; color: var(--teal-deep); }
+.hero-rings .core .l { font-size: 12px; color: var(--ink-faint); max-width: 120px; }
+
+.chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.chart-card { padding: 22px 22px 14px; }
+.chart-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 2px; }
+.chart-card .sub { font-size: 12.5px; color: var(--ink-faint); margin-bottom: 12px; }
+.chart-card .canvas-wrap { height: 230px; }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-visual { order: -1; height: 200px; }
+  .chart-grid { grid-template-columns: 1fr; }
+}

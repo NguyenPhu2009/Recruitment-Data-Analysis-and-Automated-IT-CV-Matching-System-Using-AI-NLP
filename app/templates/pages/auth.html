@@ -1,0 +1,40 @@
+<section class="page" id="page-auth">
+    <div class="card auth-wrap">
+      <div class="authtabs">
+        <button class="authtab active" data-authtab="login">Đăng nhập</button>
+        <button class="authtab" data-authtab="register">Đăng ký</button>
+      </div>
+
+      <div id="auth-login-panel">
+        <div class="formfield"><label for="li-email">Email</label><input id="li-email" type="text" placeholder="ban@email.com"></div>
+        <div class="formfield"><label for="li-pass">Mật khẩu</label><input id="li-pass" type="password" placeholder="••••••••"></div>
+        <div style="text-align:right;margin-bottom:18px;">
+            <!-- Thêm ID vào nút Quên mật khẩu để JS bắt sự kiện -->
+            <button id="btn-show-reset" class="link" style="font-size:12.5px;">Quên mật khẩu?</button>
+        </div>
+        <button class="btn btn-primary btn-block">Đăng nhập</button>
+        <div class="auth-divider">hoặc</div>
+        <button class="btn btn-outline btn-block" data-goto="match">Tiếp tục dưới dạng khách (ẩn danh)</button>
+      </div>
+
+      <div id="auth-register-panel" style="display:none;">
+        <div class="formfield"><label for="rg-name">Họ và tên</label><input id="rg-name" type="text" placeholder="Nguyễn Văn A"></div>
+        <div class="formfield"><label for="rg-email">Email</label><input id="rg-email" type="text" placeholder="ban@email.com"></div>
+        <div class="formfield"><label for="rg-pass">Mật khẩu</label><input id="rg-pass" type="password" placeholder="Tối thiểu 8 ký tự"></div>
+        <div class="formfield"><label for="rg-pass2">Nhập lại mật khẩu</label><input id="rg-pass2" type="password" placeholder="••••••••"></div>
+        <button class="btn btn-primary btn-block">Tạo tài khoản</button>
+      </div>
+
+      <div id="auth-reset-panel" style="display:none;">
+        <div style="margin-bottom: 15px; font-weight: bold; text-align: center; color: var(--teal-deep);">Đặt lại mật khẩu</div>
+        <div class="formfield"><label for="rs-email">Email đăng ký</label><input id="rs-email" type="email" placeholder="ban@email.com"></div>
+        <div class="formfield"><label for="rs-pass">Mật khẩu mới</label><input id="rs-pass" type="password" placeholder="Tối thiểu 6 ký tự"></div>
+        <div class="formfield"><label for="rs-pass2">Xác nhận mật khẩu</label><input id="rs-pass2" type="password" placeholder="••••••••"></div>
+        <button id="btn-submit-reset" class="btn btn-primary btn-block">Lưu mật khẩu mới</button>
+        <div style="text-align:center;margin-top:15px;">
+            <button id="btn-back-to-login" class="link" style="font-size:12.5px;">Quay lại đăng nhập</button>
+        </div>
+      </div>
+
+    </div>
+  </section>

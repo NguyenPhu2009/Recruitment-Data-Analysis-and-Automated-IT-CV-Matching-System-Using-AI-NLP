@@ -1,0 +1,11 @@
+/* Import Core & Components */
+@import url('base.css');
+@import url('layout.css');
+@import url('components.css');
+
+/* Import Pages */
+@import url('pages/dashboard.css');
+@import url('pages/jobs.css');
+@import url('pages/auth.css');
+@import url('pages/match.css');
+@import url('pages/history.css');

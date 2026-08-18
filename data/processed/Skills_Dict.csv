@@ -1,0 +1,132 @@
+﻿skill_id,skill_name,skill_category,normalized_form
+1,Python,Programming Language,python
+2,Java,Programming Language,java
+3,C++,Programming Language,c++
+4,C#,Programming Language,c#
+5,JavaScript,Programming Language,javascript
+6,TypeScript,Programming Language,typescript
+7,PHP,Programming Language,php
+8,Ruby,Programming Language,ruby
+9,Go,Programming Language,golang
+10,Swift,Programming Language,swift
+11,Kotlin,Programming Language,kotlin
+12,SQL,Programming Language,sql
+13,R,Programming Language,r
+14,Scala,Programming Language,scala
+15,Rust,Programming Language,rust
+16,Dart,Programming Language,dart
+17,Objective-C,Programming Language,objective-c
+18,Shell / Bash,Programming Language,shell
+19,Perl,Programming Language,perl
+20,HTML/CSS,Frontend,html/css
+21,ReactJS,Frontend,react
+22,Angular,Frontend,angular
+23,VueJS,Frontend,vue
+24,Next.js,Frontend,nextjs
+25,Nuxt.js,Frontend,nuxtjs
+26,Svelte,Frontend,svelte
+27,Tailwind CSS,Frontend,tailwind
+28,Bootstrap,Frontend,bootstrap
+29,Sass / Less,Frontend,sass
+30,Redux,Frontend,redux
+31,Webpack,Frontend,webpack
+32,Figma / UI Design,UI/UX,figma
+33,Node.js,Backend,nodejs
+34,Express.js,Backend,express
+35,NestJS,Backend,nestjs
+36,Spring Boot,Backend,spring boot
+37,Django,Backend,django
+38,Flask,Backend,flask
+39,FastAPI,Backend,fastapi
+40,ASP.NET,Backend,asp.net
+41,Laravel,Backend,laravel
+42,Ruby on Rails,Backend,ruby on rails
+43,GraphQL,Backend,graphql
+44,gRPC,Backend,grpc
+45,React Native,Mobile,react native
+46,Flutter,Mobile,flutter
+47,Android Native,Mobile,android
+48,iOS Native,Mobile,ios
+49,Xamarin,Mobile,xamarin
+50,Ionic,Mobile,ionic
+51,MySQL,Database,mysql
+52,PostgreSQL,Database,postgresql
+53,Oracle,Database,oracle
+54,SQL Server,Database,sql server
+55,MongoDB,Database,mongodb
+56,Redis,Database,redis
+57,Cassandra,Database,cassandra
+58,Elasticsearch,Database,elasticsearch
+59,DynamoDB,Database,dynamodb
+60,MariaDB,Database,mariadb
+61,Firebase,Database,firebase
+62,Neo4j,Database,neo4j
+63,AWS,Cloud/DevOps,aws
+64,Azure,Cloud/DevOps,azure
+65,Google Cloud,Cloud/DevOps,gcp
+66,Docker,Cloud/DevOps,docker
+67,Kubernetes,Cloud/DevOps,kubernetes
+68,Jenkins,Cloud/DevOps,jenkins
+69,Git,Cloud/DevOps,git
+70,CI/CD,Cloud/DevOps,ci/cd
+71,Linux,Cloud/DevOps,linux
+72,Terraform,Cloud/DevOps,terraform
+73,Ansible,Cloud/DevOps,ansible
+74,Prometheus / Grafana,Cloud/DevOps,monitoring
+75,Nginx / Apache,Cloud/DevOps,web server
+76,Hadoop,Data Engineering,hadoop
+77,Spark,Data Engineering,spark
+78,Kafka,Data Engineering,kafka
+79,Airflow,Data Engineering,airflow
+80,Hive,Data Engineering,hive
+81,Data Warehouse,Data Engineering,dwh
+82,ETL,Data Engineering,etl
+83,Snowflake,Data Engineering,snowflake
+84,BigQuery,Data Engineering,bigquery
+85,Databricks,Data Engineering,databricks
+86,Talend / Pentaho,Data Engineering,data tools
+87,Machine Learning,AI/Data Science,machine learning
+88,AI,AI/Data Science,ai
+89,NLP,AI/Data Science,nlp
+90,Deep Learning,AI/Data Science,deep learning
+91,Computer Vision,AI/Data Science,computer vision
+92,TensorFlow,AI/Data Science,tensorflow
+93,PyTorch,AI/Data Science,pytorch
+94,Scikit-Learn,AI/Data Science,scikit-learn
+95,Keras,AI/Data Science,keras
+96,Pandas / NumPy,AI/Data Science,data wrangling
+97,LLM / Generative AI,AI/Data Science,llm
+98,Power BI,AI/Data Science,power bi
+99,Tableau,AI/Data Science,tableau
+100,MLOps,AI/Data Science,mlops
+101,Automation Testing,QA/Testing,automation test
+102,Manual Testing,QA/Testing,manual test
+103,Selenium,QA/Testing,selenium
+104,Cypress,QA/Testing,cypress
+105,Appium,QA/Testing,appium
+106,JUnit / TestNG,QA/Testing,java testing
+107,Jest / Mocha,QA/Testing,js testing
+108,Postman / API Testing,QA/Testing,api testing
+109,Cyber Security,Security/Network,security
+110,Penetration Testing,Security/Network,pentest
+111,OWASP,Security/Network,owasp
+112,Firewall / VPN,Security/Network,network security
+113,TCP/IP & DNS,Security/Network,networking
+114,SIEM,Security/Network,siem
+115,Unity,Game Dev,unity
+116,Unreal Engine,Game Dev,unreal engine
+117,Solidity,Blockchain,solidity
+118,Smart Contracts,Blockchain,smart contract
+119,Web3 / Ethereum,Blockchain,web3
+120,Agile,Methodology,agile
+121,Scrum,Methodology,scrum
+122,REST API,Concept,rest api
+123,Microservices,Concept,microservices
+124,OOP,Concept,oop
+125,Design Patterns,Concept,design patterns
+126,SOLID Principles,Concept,solid
+127,MVC / MVVM,Concept,mvc
+128,TDD / BDD,Concept,tdd
+129,System Design,Concept,system design
+130,T-SQL,Concept,t-sql
+131,LINQ / Entity Framework,Framework/Library,ef

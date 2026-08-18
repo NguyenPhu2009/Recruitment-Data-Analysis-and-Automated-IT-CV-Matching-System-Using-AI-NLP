@@ -1,0 +1,128 @@
+<section class="page" id="page-match">
+    <div class="section-head" style="margin-top:36px;">
+      <h2>Chấm điểm mức độ phù hợp giữa CV và tin tuyển dụng</h2>
+    </div>
+
+    <!-- KHỐI NHẬP THÔNG TIN VÀ UPLOAD CV -->
+    <div class="match-state is-visible" id="match-upload">
+
+      <!-- Box 1: Nhập Vị trí ứng tuyển (Job Title) -->
+      <div class="card" style="padding:32px; margin-bottom: 24px;">
+        <h4 style="margin-top:0; margin-bottom: 16px; color: var(--navy);">1. Vị trí ứng tuyển</h4>
+        <div class="form-group" style="margin-bottom: 0;">
+            <input type="text" id="job_title" class="form-control" placeholder="..." style="width: 100%; padding: 12px; border: 1px solid var(--cloud); border-radius: 8px;">
+        </div>
+      </div>
+
+      <!-- Box 2: Dán Mô tả công việc (Job Description) -->
+      <div class="card" style="padding:32px; margin-bottom: 24px;">
+        <h4 style="margin-top:0; margin-bottom: 16px; color: var(--navy);">2. Mô tả công việc</h4>
+        <div class="form-group" style="margin-bottom: 0;">
+            <textarea id="jd_text" class="form-control custom-jd-textarea" rows="12" placeholder="..."></textarea>
+        </div>
+      </div>
+
+      <!-- Box 3: Tải lên CV của bạn -->
+      <div class="card" style="padding:32px;">
+        <h4 style="margin-top:0; margin-bottom: 16px; color: var(--navy);">3. Tải lên CV của bạn</h4>
+        <div class="dropzone" id="dropzone">
+          <input type="file" id="cvFileInput" accept="application/pdf" hidden>
+          <div class="dropzone-icon"><svg class="icon"><use href="#icon-upload"/></svg></div>
+          <p class="dropzone-title">Kéo thả CV (.pdf) vào đây</p>
+          <p class="dropzone-sub">hoặc <span class="link">bấm để chọn file</span> từ máy tính</p>
+          <p class="dropzone-hint">Tối đa 5MB · Chỉ nhận PDF dạng văn bản (không phải ảnh scan)</p>
+        </div>
+
+        <div class="file-chip" id="fileChip">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <svg class="icon" style="color:var(--teal);"><use href="#icon-doc"/></svg>
+            <span class="mono" id="fileName"></span>
+          </div>
+          <button class="file-chip-remove" id="fileRemove">✕</button>
+        </div>
+
+        <div style="margin-top: 24px;">
+            <button class="btn btn-primary btn-block" id="analyzeBtn" disabled>Phân tích ngay</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KHỐI PROCESSING & KẾT QUẢ (GIỮ NGUYÊN) -->
+    <div class="match-state" id="match-processing">
+      <div class="card processing-wrap">
+        <div class="radar-pulse">
+          <span></span><span></span><span></span>
+          <div class="center"><svg class="icon" style="width:26px;height:26px;"><use href="#icon-radar"/></svg></div>
+        </div>
+        <p id="processingStatus">Đang đọc nội dung CV...</p>
+        <p class="processing-sub">PyMuPDF → pdfplumber (dự phòng) → FastText → TF-IDF (nếu cần)</p>
+        <div class="progressbar"><i id="progressFill"></i></div>
+      </div>
+    </div>
+
+    <div class="match-state" id="match-result">
+      <div class="warning-banner" id="warningBanner" style="display: none;">
+        <svg class="icon"><use href="#icon-warning"/></svg>
+        <p>CV có định dạng 2 cột khá phức tạp hoặc chứa nhiều từ vựng mới — hệ thống đã kích hoạt phương án dự phòng để đảm bảo độ chính xác.<span class="tag">method: tfidf_fallback</span></p>
+        <button id="warningDismiss" aria-label="Đóng thông báo">✕</button>
+      </div>
+
+      <div class="card" style="padding:32px;">
+        <div class="result-top">
+          <div class="dial-wrap">
+            <div id="mainDial"></div>
+            <div class="dial-center">
+              <div class="dial-percent mono" id="mainDialPercent">0%</div>
+              <div class="dial-status badge-moss badge" id="mainDialLabel">—</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="score-breakdown">
+          <div class="score-row">
+            <span class="name">Kỹ năng</span><span class="weight">×0.6</span>
+            <div class="score-track"><i id="score-skill-bar" style="width:0%;background:var(--teal);"></i></div>
+            <span class="val mono" id="score-skill-val">0%</span>
+          </div>
+          <div class="score-row">
+            <span class="name">Ngữ nghĩa</span><span class="weight">×0.3</span>
+            <div class="score-track"><i id="score-semantic-bar" style="width:0%;background:var(--violet);"></i></div>
+            <span class="val mono" id="score-semantic-val">0%</span>
+          </div>
+          <div class="score-row">
+            <span class="name">Kinh nghiệm</span><span class="weight">×0.1</span>
+            <div class="score-track"><i id="score-exp-bar" style="width:0%;background:var(--amber);"></i></div>
+            <span class="val mono" id="score-exp-val">0%</span>
+          </div>
+        </div>
+
+        <div class="skills-columns">
+          <div>
+            <h4 style="color:var(--moss);"><svg class="icon"><use href="#icon-check"/></svg>Kỹ năng khớp (<span id="matched-count">0</span>)</h4>
+            <div class="chiplist" id="matched-skills-list">
+              </div>
+          </div>
+          <div>
+            <h4 style="color:var(--coral);"><svg class="icon"><use href="#icon-x"/></svg>Kỹ năng còn thiếu (<span id="missing-count">0</span>)</h4>
+            <div class="chiplist" id="missing-skills-list">
+              </div>
+          </div>
+        </div>
+
+        <div class="card suggestion-card">
+          <h4>Gợi ý cải thiện</h4>
+          <p id="match-suggestion-text">Đang tổng hợp gợi ý...</p>
+        </div>
+
+        <div class="card save-prompt" id="match-save-prompt">
+          <div class="l"><svg class="icon"><use href="#icon-lock"/></svg>Đăng nhập để lưu kết quả này vào Lịch sử của bạn</div>
+          <button class="btn btn-outline" data-goto="auth" data-authtab="login">Đăng nhập</button>
+        </div>
+
+        <div class="result-actions">
+          <button class="btn btn-outline" id="retryBtn">↺ Thử lại với CV/JD khác</button>
+          <button class="btn btn-ghost" data-goto="history">Xem lịch sử của tôi →</button>
+        </div>
+      </div>
+    </div>
+</section>

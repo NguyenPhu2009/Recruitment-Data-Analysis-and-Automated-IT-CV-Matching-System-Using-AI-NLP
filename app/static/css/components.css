@@ -1,0 +1,38 @@
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 10px; padding: 12px 20px; font-size: 14.5px; font-weight: 600; border: 1px solid transparent; transition: .15s; white-space: nowrap; }
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-primary:hover { background: var(--teal-deep); }
+.btn-primary:disabled { background: var(--ink-faint); cursor: not-allowed; }
+.btn-outline { background: transparent; border-color: var(--line); color: var(--ink); }
+.btn-outline:hover { border-color: var(--teal); color: var(--teal-deep); }
+.btn-ghost { background: transparent; color: var(--ink-dim); padding: 12px 16px; }
+.btn-ghost:hover { color: var(--ink); }
+.btn-block { width: 100%; }
+.btn-tiny { padding: 6px 12px; font-size: 12.5px; border-radius: 8px; background: #fff; border: 1px dashed var(--line); color: var(--ink-dim); font-weight: 500; }
+.btn-tiny:hover { border-color: var(--teal); color: var(--teal-deep); }
+.link { color: var(--teal-deep); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; background: none; border: none; padding: 0; font-size: inherit; }
+
+/* Cards & Generic Structure */
+.card { background: var(--panel); border: 1px solid var(--line-soft); border-radius: var(--radius-m); box-shadow: var(--shadow-card); }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; color: var(--teal-deep); display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); position: relative; }
+.eyebrow .dot::after { content: ''; position: absolute; inset: -4px; border: 1px solid var(--teal); border-radius: 50%; opacity: .5; animation: ping 2.4s ease-out infinite; }
+@keyframes ping { 0% { transform: scale(.6); opacity: .6; } 100% { transform: scale(2.2); opacity: 0; } }
+.section-head { margin: 64px 0 28px; }
+.section-head:first-of-type { margin-top: 40px; }
+
+/* Badges & Chips */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+.badge-neutral { background: var(--bg-alt); color: var(--ink-dim); }
+.badge-teal { background: var(--teal-tint); color: var(--teal-deep); }
+.badge-moss { background: var(--moss-tint); color: var(--moss); }
+.badge-amber { background: var(--amber-tint); color: var(--amber); }
+.badge-coral { background: var(--coral-tint); color: var(--coral); }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border-radius: 8px; font-size: 12.5px; font-family: var(--font-mono); border: 1px solid var(--line); background: #fff; color: var(--ink-dim); }
+.chip-match { background: var(--moss-tint); border-color: transparent; color: var(--moss); }
+.chip-missing { background: var(--coral-tint); border-color: transparent; color: var(--coral); }
+.chip .icon { width: 13px; height: 13px; }
+
+/* Forms Base */
+input[type=text], select { width: 100%; border: 1px solid var(--line); border-radius: 9px; padding: 10px 12px; font-size: 14px; font-family: inherit; background: #fff; color: var(--ink); }
+input[type=text]:focus, select:focus { border-color: var(--teal); }
