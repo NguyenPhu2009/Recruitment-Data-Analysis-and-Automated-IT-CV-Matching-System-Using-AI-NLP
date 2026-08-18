@@ -1,20 +1,19 @@
 import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine, text
-import urllib
 import time
 
-SERVER_NAME = r'NGUYENANPHU\MAYAO'
-DATABASE_NAME = 'ATS_Database'
+# ==========================================
+# CẤU HÌNH KẾT NỐI MYSQL
+# ==========================================
+DB_USER = 'root'       # Thay bằng username MySQL của bạn
+DB_PASSWORD = '200905'       # Thay bằng password MySQL của bạn (nếu có)
+DB_HOST = 'localhost'
+DB_PORT = '3306'
+DB_NAME = 'ats_db'
 
-params = urllib.parse.quote_plus(
-    f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-    f"SERVER={SERVER_NAME};"
-    f"DATABASE={DATABASE_NAME};"
-    f"Trusted_Connection=yes;"
-)
-
-engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}", fast_executemany=True)
+# Tạo chuỗi kết nối MySQL (Sử dụng pymysql)
+engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4")
 
 input_file = r"D:\Recruitment-Data-Analysis-and-Automated-IT-CV-Matching-System-Using-AI-NLP\data\processed\clean_all_jobs.csv"
 
@@ -56,9 +55,9 @@ try:
     if 'salary_max' in df.columns:
         df['salary_max'] = pd.to_numeric(df['salary_max'], errors='coerce')
 
-    # --- [ĐIỂM SỬA CHỮA QUAN TRỌNG] ---
+    # --- [ĐIỂM SỬA CHỮA QUAN TRỌNG CHO MYSQL] ---
 
-    # 1. Chuyển Boolean thành Integer (0 hoặc 1) cho khớp kiểu BIT
+    # 1. Chuyển Boolean thành Integer (0 hoặc 1) cho khớp kiểu BOOLEAN (TINYINT) trong MySQL
     if 'is_negotiable' in df.columns:
         df['is_negotiable'] = df['is_negotiable'].fillna(False).astype(int)
     if 'is_remote' in df.columns:
@@ -70,17 +69,19 @@ try:
     if 'crawled_at' in df.columns:
         df['crawled_at'] = pd.to_datetime(df['crawled_at'], errors='coerce', format='mixed').dt.strftime('%Y-%m-%d')
 
-
     print(f"\n--- ĐANG XÓA SẠCH DỮ LIỆU CŨ TẠI BẢNG Job_Postings ---")
     with engine.begin() as conn:
-        conn.execute(text("DELETE FROM Job_Postings;"))
-        print("-> Đã xóa dữ liệu cũ thành công (Bảo toàn được Khóa ngoại).")
+        # Tắt kiểm tra khóa ngoại tạm thời để xóa sạch dữ liệu (tránh lỗi nếu có FK từ bảng Job_Skill)
+        conn.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
+        conn.execute(text("TRUNCATE TABLE Job_Postings;"))
+        conn.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
+        print("-> Đã xóa dữ liệu cũ thành công.")
 
     print(f"\n--- ĐANG ĐẨY DỮ LIỆU MỚI VÀO BẢNG Job_Postings ---")
     start_time = time.time()
 
     df.to_sql(
-        name='Job_Postings',
+        name='job_postings',
         con=engine,
         if_exists='append',
         index=False

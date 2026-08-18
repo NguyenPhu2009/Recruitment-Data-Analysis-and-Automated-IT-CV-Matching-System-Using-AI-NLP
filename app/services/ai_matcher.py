@@ -2,11 +2,14 @@ import os
 import pickle
 import re
 import numpy as np
-# ĐỔI TỪ FastText SANG KeyedVectors
 from gensim.models import KeyedVectors
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Sửa lại tên file cho đúng với file bạn đã train (.kv)
+# Import hàm trích xuất kỹ năng (Giả định bạn đang để ở skill_extractor.py)
+from app.services.skill_extractor import extract_skills_from_text
+
+# Nếu có hàm tính kinh nghiệm: from app.services.cv_extractor import extract_experience
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FASTTEXT_PATH = os.path.join(BASE_DIR, 'models_repository', 'fasttext_model.kv')
 TFIDF_PATH = os.path.join(BASE_DIR, 'models_repository', 'tfidf_model.pkl')
@@ -21,7 +24,6 @@ class AIModelLoader:
     def get_fasttext(cls):
         if cls._fasttext_wv is None and os.path.exists(FASTTEXT_PATH):
             print("⏳ Lazy Loading: Đang nạp KeyedVectors vào RAM...")
-            # DÙNG KeyedVectors ĐỂ LOAD FILE .kv
             cls._fasttext_wv = KeyedVectors.load(FASTTEXT_PATH)
         return cls._fasttext_wv
 
@@ -39,6 +41,7 @@ def preprocess_for_model(text: str) -> list:
     if not text:
         return []
     text = text.lower()
+
     # Giữ nguyên các token đặc thù IT
     text = re.sub(r'c#', 'c_sharp', text)
     text = re.sub(r'c\+\+', 'cplusplus', text)
@@ -55,7 +58,6 @@ def calculate_semantic_similarity(cv_text: str, jd_text: str, matched_skills: li
     if matched_skills is None:
         matched_skills = []
 
-    # Lấy đối tượng vector (đã load sẵn qua Singleton)
     wv_model = AIModelLoader.get_fasttext()
     tfidf_vectorizer = AIModelLoader.get_tfidf()
 
@@ -73,7 +75,6 @@ def calculate_semantic_similarity(cv_text: str, jd_text: str, matched_skills: li
     if not filtered_cv or not filtered_jd:
         return {"score": 0.0, "method": "none", "oov_rate": 0.0}
 
-    # BỎ ".wv" VÌ BẢN THÂN wv_model ĐÃ LÀ KEYEDVECTORS
     cv_oov = sum(1 for t in filtered_cv if t not in wv_model.key_to_index)
     jd_oov = sum(1 for t in filtered_jd if t not in wv_model.key_to_index)
 
@@ -81,13 +82,10 @@ def calculate_semantic_similarity(cv_text: str, jd_text: str, matched_skills: li
 
     # Logic tự động chuyển đổi mô hình
     if avg_oov <= 0.30:
-        # BỎ ".wv" VÌ BẢN THÂN wv_model ĐÃ LÀ KEYEDVECTORS
         distance = wv_model.wmdistance(filtered_cv, filtered_jd)
-
         if distance == float('inf'):
             semantic_score = 0.0
         else:
-            # Quy đổi Distance thành Similarity Score (0-100)
             semantic_score = (1 / (1 + distance)) * 100
         method_used = "wmd_fasttext"
     else:
@@ -102,7 +100,67 @@ def calculate_semantic_similarity(cv_text: str, jd_text: str, matched_skills: li
         method_used = "tfidf_fallback"
 
     return {
-        "score": round(max(0.0, min(100.0, semantic_score)), 1),  # Chặn ngưỡng 0-100
+        "score": round(max(0.0, min(100.0, semantic_score)), 1),
         "method": method_used,
         "oov_rate": round(float(avg_oov * 100), 1)
     }
+
+
+class AIMatchingEngine:
+    """Lớp điều phối toàn bộ luồng xử lý Match CV"""
+
+    def analyze_matching(self, cv_text: str, job_jd_text: str) -> dict:
+        if not cv_text or not job_jd_text:
+            return {
+                "overall_score": 0.0,
+                "skill_score": 0.0,
+                "semantic_score": 0.0,
+                "exp_score": 0.0,
+                "matched_skills": [],
+                "missing_skills": [],
+                "method_used": "none",
+                "oov_rate": 0.0
+            }
+
+        # 1. Trích xuất kỹ năng On-the-fly từ CV và JD
+        jd_skills = extract_skills_from_text(job_jd_text)
+        cv_skills = extract_skills_from_text(cv_text)
+
+        # 2. Tính Skill Score (Trọng số: 60%)
+        jd_skills_set = set(jd_skills)
+        cv_skills_set = set(cv_skills)
+
+        matched_skills = list(jd_skills_set & cv_skills_set)
+        missing_skills = list(jd_skills_set - cv_skills_set)
+
+        if len(jd_skills_set) > 0:
+            skill_score = (len(matched_skills) / len(jd_skills_set)) * 100
+        else:
+            skill_score = 0.0
+
+        # 3. Tính Semantic Score (Trọng số: 30%)
+        semantic_result = calculate_semantic_similarity(cv_text, job_jd_text, matched_skills)
+        semantic_score = semantic_result["score"]
+
+        # 4. Tính Exp Score (Trọng số: 10%) - Giả lập hoặc gọi hàm nếu có
+        # exp_cv = extract_experience(cv_text)
+        # exp_jd = extract_experience(job_jd_text)
+        exp_score = 100.0  # Tạm gán, cập nhật lại nếu bạn đã xử lý xong hàm trích xuất kinh nghiệm
+
+        # 5. Tổng hợp Overall Score
+        overall_score = (0.6 * skill_score) + (0.3 * semantic_score) + (0.1 * exp_score)
+
+        return {
+            "overall_score": round(overall_score, 1),
+            "skill_score": round(skill_score, 1),
+            "semantic_score": semantic_score,
+            "exp_score": exp_score,
+            "matched_skills": matched_skills,
+            "missing_skills": missing_skills,
+            "method_used": semantic_result["method"],
+            "oov_rate": semantic_result["oov_rate"]
+        }
+
+
+# Khởi tạo biến engine để gọi ở file route (ai_engine.analyze_matching...)
+ai_engine = AIMatchingEngine()

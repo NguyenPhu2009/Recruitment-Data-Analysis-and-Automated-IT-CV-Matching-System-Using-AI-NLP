@@ -3,17 +3,14 @@ from sqlalchemy import create_engine, text
 import urllib
 import time
 
-SERVER_NAME = r'NGUYENANPHU\MAYAO'
-DATABASE_NAME = 'ATS_Database'
+DB_USER = 'root'       # Thay bằng username MySQL của bạn
+DB_PASSWORD = '200905'       # Thay bằng password MySQL của bạn (nếu có)
+DB_HOST = 'localhost'
+DB_PORT = '3306'
+DB_NAME = 'ats_db'
 
-params = urllib.parse.quote_plus(
-    f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-    f"SERVER={SERVER_NAME};"
-    f"DATABASE={DATABASE_NAME};"
-    f"Trusted_Connection=yes;"
-)
-
-engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}", fast_executemany=True)
+# Tạo chuỗi kết nối MySQL (Sử dụng pymysql)
+engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4")
 
 dict_file = r"../../data/processed/Skills_Dict.csv"
 
@@ -41,7 +38,7 @@ try:
 
     # 4.1. Nạp bảng cha: Skills_Dict
     skills_df.to_sql(
-        name='Skills_Dict',
+        name='skills_dict',
         con=engine,
         if_exists='append',
         index=False

@@ -1,7 +1,5 @@
 const COLORS = { teal: '#0B7A73', moss: '#25794C', amber: '#B5791F', coral: '#B84737', violet: '#5B5BC7' };
 
-// ĐÃ XÓA: Biến currentMatchJobId vì không còn lưu ID công việc nữa
-
 function showMatchState(name) {
     document.querySelectorAll('.match-state').forEach(el => el.classList.remove('is-visible'));
     document.getElementById('match-' + name).classList.add('is-visible');
@@ -15,7 +13,7 @@ function startProcessingUI() {
         "Đang đọc nội dung CV...",
         "Đang trích xuất văn bản (PyMuPDF / pdfplumber)...",
         "Đang phân tích và so khớp kỹ năng với JD...",
-        "Đang nạp mô hình FastText tính điểm ngữ nghĩa..." // Đã cập nhật tên mô hình thành FastText
+        "Đang nạp mô hình FastText tính điểm ngữ nghĩa..."
     ];
     var i = 0;
     var label = document.getElementById('processingStatus');
@@ -75,8 +73,8 @@ function buildDial(container, percent, colorHex, size, showTicks) {
     });
 }
 
-// Hàm render dữ liệu THẬT trả về từ API AI
-function renderResult(data) {
+// Hàm render dữ liệu THẬT trả về từ API AI (ĐÃ THÊM THAM SỐ jdText)
+function renderResult(data, jdText) {
     var pct = data.overall_score || 0;
     var label = 'Phù hợp tốt', badgeClass = 'badge-moss', color = COLORS.moss;
 
@@ -110,13 +108,33 @@ function renderResult(data) {
     document.getElementById('missing-count').textContent = missingList.length;
     document.getElementById('missing-skills-list').innerHTML = missingList.map(s => `<span class="chip chip-missing"><svg class="icon"><use href="#icon-x"/></svg>${s}</span>`).join('');
 
-    // Đổ nội dung Gợi ý từ AI (nếu Backend có trả về trường suggestion)
-    if (data.suggestion) {
-        const suggestionEl = document.getElementById('match-suggestion-text');
-        if (suggestionEl) suggestionEl.textContent = data.suggestion;
+    // 4. Xử lý hiển thị JD và nút Xem thêm / Thu gọn
+    const jdContainer = document.getElementById('match-jd-text');
+    const toggleBtn = document.getElementById('toggleJdBtn');
+
+    if (jdContainer && jdText) {
+        // Biến \n thành <br> để giữ đúng format xuống dòng của JD
+        jdContainer.innerHTML = jdText.replace(/\n/g, '<br>');
+
+        // Hiện nút Xem thêm...
+        toggleBtn.style.display = 'inline-block';
+        toggleBtn.textContent = 'Xem thêm...';
+
+        // Gắn sự kiện click
+        toggleBtn.onclick = function() {
+            if (jdContainer.style.webkitLineClamp === '3') {
+                // Mở rộng: bỏ giới hạn dòng
+                jdContainer.style.webkitLineClamp = 'unset';
+                toggleBtn.textContent = 'Thu gọn';
+            } else {
+                // Thu gọn: giới hạn lại 3 dòng
+                jdContainer.style.webkitLineClamp = '3';
+                toggleBtn.textContent = 'Xem thêm...';
+            }
+        };
     }
 
-    // 4. Xử lý Cảnh báo (Fallback TF-IDF)
+    // 5. Xử lý Cảnh báo (Fallback TF-IDF)
     const warningBanner = document.getElementById('warningBanner');
     if(data.warning) {
         warningBanner.style.display = 'flex';
@@ -182,7 +200,7 @@ async function handleAnalyzeCV() {
 
         if (response.ok) {
             showMatchState('result');
-            renderResult(result);
+            renderResult(result, jdText); // <-- ĐÃ TRUYỀN THÊM jdText VÀO ĐÂY
         } else {
             alert("Lỗi hệ thống: " + (result.message || "Không thể phân tích CV"));
             showMatchState('upload');

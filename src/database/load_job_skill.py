@@ -1,26 +1,26 @@
 import pandas as pd
 from sqlalchemy import create_engine, text
-import urllib
 import time
+import os
 
-SERVER_NAME = r'NGUYENANPHU\MAYAO'
-DATABASE_NAME = 'ATS_Database'
+# ==========================================
+# CẤU HÌNH KẾT NỐI MYSQL
+# ==========================================
+DB_USER = 'root'       # Thay bằng username MySQL của bạn
+DB_PASSWORD = '200905'       # Thay bằng password MySQL của bạn (nếu có)
+DB_HOST = 'localhost'
+DB_PORT = '3306'
+DB_NAME = 'ats_db'
 
-params = urllib.parse.quote_plus(
-    f"DRIVER={{ODBC Driver 17 for SQL Server}};"
-    f"SERVER={SERVER_NAME};"
-    f"DATABASE={DATABASE_NAME};"
-    f"Trusted_Connection=yes;"
-)
-
-engine = create_engine(f"mssql+pyodbc:///?odbc_connect={params}", fast_executemany=True)
+# Tạo chuỗi kết nối MySQL (Sử dụng pymysql)
+engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4")
 
 job_skill_file = r"../../data/processed/Job_Skill.csv"
 
 try:
     print("--- ĐANG ĐỌC DỮ LIỆU ---")
 
-    # [ĐÃ UPDATE]: Ép chuẩn utf-8 khi đọc fi
+    # Ép chuẩn utf-8 khi đọc file
     job_skill_df = pd.read_csv(job_skill_file, encoding='utf-8')
 
     # Ép kiểu dữ liệu sang số nguyên (INT) để khớp tuyệt đối với CSDL
@@ -29,21 +29,22 @@ try:
 
     print(f"-> Mapping Kỹ năng - Job: {len(job_skill_df)} dòng.")
 
-
     with engine.begin() as conn:
-        conn.execute(text("DELETE FROM Job_Skill;"))
+        # Tắt kiểm tra khóa ngoại tạm thời để xóa sạch dữ liệu
+        conn.execute(text("SET FOREIGN_KEY_CHECKS=0;"))
+        conn.execute(text("TRUNCATE TABLE Job_Skill;"))
+        conn.execute(text("SET FOREIGN_KEY_CHECKS=1;"))
     print("\n-> Đã dọn sạch dữ liệu cũ trong Database.")
 
     # ==========================================
     # 4. NẠP DỮ LIỆU MỚI
     # ==========================================
-    print("\n--- ĐANG ĐẨY DỮ LIỆU VÀO SQL SERVER ---")
+    print("\n--- ĐANG ĐẨY DỮ LIỆU VÀO MYSQL ---")
     start_time = time.time()
-
 
     # 4.2. Nạp bảng con: Job_Skill
     job_skill_df.to_sql(
-        name='Job_Skill',
+        name='job_skill',
         con=engine,
         if_exists='append',
         index=False

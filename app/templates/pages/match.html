@@ -47,7 +47,7 @@
       </div>
     </div>
 
-    <!-- KHỐI PROCESSING & KẾT QUẢ (GIỮ NGUYÊN) -->
+    <!-- KHỐI PROCESSING & KẾT QUẢ -->
     <div class="match-state" id="match-processing">
       <div class="card processing-wrap">
         <div class="radar-pulse">
@@ -109,9 +109,21 @@
           </div>
         </div>
 
+        <!-- KHỐI MỚI: MÔ TẢ CÔNG VIỆC -->
         <div class="card suggestion-card">
-          <h4>Gợi ý cải thiện</h4>
-          <p id="match-suggestion-text">Đang tổng hợp gợi ý...</p>
+          <h4 style="color: var(--navy); margin-bottom: 12px;">Mô tả công việc đã nộp</h4>
+
+          <div id="match-jd-container" style="font-size: 14px; color: var(--ink-light); line-height: 1.6;">
+            <!-- Đoạn text JD sẽ được giới hạn 3 dòng bằng CSS -->
+            <div id="match-jd-text" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; transition: all 0.3s ease;">
+              Đang tải nội dung...
+            </div>
+
+            <!-- Nút Xem thêm -->
+            <button id="toggleJdBtn" style="background: none; border: none; color: var(--teal); font-weight: 600; padding: 4px 0; cursor: pointer; display: none; margin-top: 4px;">
+              Xem thêm...
+            </button>
+          </div>
         </div>
 
         <div class="card save-prompt" id="match-save-prompt">
