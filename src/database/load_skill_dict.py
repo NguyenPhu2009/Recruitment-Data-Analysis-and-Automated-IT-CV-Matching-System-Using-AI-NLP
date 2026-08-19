@@ -2,17 +2,19 @@ import pandas as pd
 from sqlalchemy import create_engine, text
 import urllib
 import time
+import os # THÊM DÒNG NÀY
 
-DB_USER = 'root'       # Thay bằng username MySQL của bạn
-DB_PASSWORD = '200905'       # Thay bằng password MySQL của bạn (nếu có)
+DB_USER = 'root'
+DB_PASSWORD = '200905'
 DB_HOST = 'localhost'
 DB_PORT = '3306'
 DB_NAME = 'ats_db'
 
-# Tạo chuỗi kết nối MySQL (Sử dụng pymysql)
 engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4")
 
-dict_file = r"../../data/processed/Skills_Dict.csv"
+# --- ĐIỂM SỬA CHỮA ---
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+dict_file = os.path.join(BASE_DIR, 'data', 'processed', 'Skills_Dict.csv')
 
 try:
     print("--- ĐANG ĐỌC DỮ LIỆU ---")

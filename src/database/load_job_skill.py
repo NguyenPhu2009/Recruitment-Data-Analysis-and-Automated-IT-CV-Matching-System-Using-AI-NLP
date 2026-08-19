@@ -3,19 +3,18 @@ from sqlalchemy import create_engine, text
 import time
 import os
 
-# ==========================================
-# CẤU HÌNH KẾT NỐI MYSQL
-# ==========================================
-DB_USER = 'root'       # Thay bằng username MySQL của bạn
-DB_PASSWORD = '200905'       # Thay bằng password MySQL của bạn (nếu có)
+
+DB_USER = 'root'
+DB_PASSWORD = '200905'
 DB_HOST = 'localhost'
 DB_PORT = '3306'
 DB_NAME = 'ats_db'
 
-# Tạo chuỗi kết nối MySQL (Sử dụng pymysql)
 engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4")
 
-job_skill_file = r"../../data/processed/Job_Skill.csv"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+job_skill_file = os.path.join(BASE_DIR, 'data', 'processed', 'Job_Skill.csv')
+
 
 try:
     print("--- ĐANG ĐỌC DỮ LIỆU ---")

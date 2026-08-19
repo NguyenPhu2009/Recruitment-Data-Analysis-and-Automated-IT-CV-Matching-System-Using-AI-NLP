@@ -5,7 +5,7 @@ import numpy as np
 from gensim.models import KeyedVectors
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Import hàm trích xuất kỹ năng (Giả định bạn đang để ở skill_extractor.py)
+# Import hàm trích xuất kỹ năng
 from app.services.skill_extractor import extract_skills_from_text
 
 # Nếu có hàm tính kinh nghiệm: from app.services.cv_extractor import extract_experience
@@ -67,7 +67,7 @@ def calculate_semantic_similarity(cv_text: str, jd_text: str, matched_skills: li
     cv_tokens = preprocess_for_model(cv_text)
     jd_tokens = preprocess_for_model(jd_text)
 
-    # BƯỚC FIX LỖI: Lọc bỏ các từ khóa Hard-match (skill_score) đã khớp
+    # Lọc bỏ các từ khóa Hard-match (skill_score) đã khớp
     filtered_cv = [t for t in cv_tokens if t not in matched_skills]
     filtered_jd = [t for t in jd_tokens if t not in matched_skills]
 
@@ -142,9 +142,7 @@ class AIMatchingEngine:
         semantic_result = calculate_semantic_similarity(cv_text, job_jd_text, matched_skills)
         semantic_score = semantic_result["score"]
 
-        # 4. Tính Exp Score (Trọng số: 10%) - Giả lập hoặc gọi hàm nếu có
-        # exp_cv = extract_experience(cv_text)
-        # exp_jd = extract_experience(job_jd_text)
+        # 4. Tính Exp Score (Trọng số: 10%)
         exp_score = 100.0  # Tạm gán, cập nhật lại nếu bạn đã xử lý xong hàm trích xuất kinh nghiệm
 
         # 5. Tổng hợp Overall Score

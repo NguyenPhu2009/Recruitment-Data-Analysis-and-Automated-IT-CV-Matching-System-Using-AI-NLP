@@ -1,5 +1,6 @@
 import os
 import json
+import uuid  # Thêm thư viện tạo chuỗi độc nhất
 from flask import Blueprint, jsonify, request, session
 from werkzeug.utils import secure_filename
 from ..utils.db_connector import DatabaseConnector
@@ -35,11 +36,20 @@ def match_cv():
 
     job_title = request.form.get('job_title', 'Vị trí tùy chỉnh')
 
-    filename = secure_filename(file.filename)
-    filepath = os.path.join(UPLOAD_FOLDER, filename)
+    # BƯỚC UPDATE: Xử lý an toàn tên file và chống ghi đè
+    original_filename = file.filename
+    safe_name = secure_filename(original_filename)
+    if not safe_name:
+        safe_name = "cv_upload.pdf"  # Fallback nếu tên file toàn tiếng Việt bị xóa trắng
+
+    unique_filename = f"{uuid.uuid4().hex}_{safe_name}"
+    filepath = os.path.join(UPLOAD_FOLDER, unique_filename)
+
     file.save(filepath)
 
     cv_text = extract_text_from_cv(filepath)
+
+    # Xóa file ngay sau khi lấy xong text
     if os.path.exists(filepath):
         os.remove(filepath)
 
@@ -55,7 +65,7 @@ def match_cv():
     # 2. Lọc kỹ năng khớp / thiếu
     matched_skills, missing_skills = extract_matched_and_missing_skills(cv_text, jd_skills)
 
-    # 3. Chấm điểm Sematic (Loại trừ các skill đã khớp cứng)
+    # 3. Chấm điểm Semantic
     ai_result = calculate_semantic_similarity(cv_text, jd_text, matched_skills)
 
     skill_score = round((len(matched_skills) / len(jd_skills) * 100), 1) if jd_skills else 70.0
@@ -73,7 +83,7 @@ def match_cv():
                 user_id=user_id,
                 job_title=job_title,
                 job_jd=jd_text,
-                cv_filename=filename,
+                cv_filename=original_filename,  # UPDATE: Lưu tên gốc để UI hiện tiếng Việt đẹp mắt
                 overall_score=overall_score,
                 skill_score=skill_score,
                 exp_score=exp_score,
@@ -82,7 +92,6 @@ def match_cv():
             )
             db_conn.save_matching_record(history_record)
         except Exception as e:
-            # Ghi log nếu xảy ra lỗi lưu Database, không làm gián đoạn trả kết quả về UI
             print(f"Lỗi lưu lịch sử: {e}")
 
     response_data = {
@@ -98,7 +107,8 @@ def match_cv():
     }
 
     if ai_result.get("method") == "tfidf_fallback":
-        response_data["warning"] = "Tỷ lệ từ vựng ngoài từ điển (OOV) cao, hệ thống tự động sử dụng phương án dự phòng TF-IDF để đảm bảo độ chính xác."
+        response_data[
+            "warning"] = "Tỷ lệ từ vựng ngoài từ điển (OOV) cao, hệ thống tự động sử dụng phương án dự phòng TF-IDF để đảm bảo độ chính xác."
 
     return jsonify(response_data), 200
 
