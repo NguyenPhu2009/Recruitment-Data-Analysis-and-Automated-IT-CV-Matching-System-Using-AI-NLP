@@ -2,19 +2,23 @@ import pandas as pd
 import numpy as np
 from sqlalchemy import create_engine, text
 import time
-import os # THÊM DÒNG NÀY
+import os
+from dotenv import load_dotenv
 
-DB_USER = 'root'
-DB_PASSWORD = '200905'
-DB_HOST = 'localhost'
-DB_PORT = '3306'
-DB_NAME = 'ats_db'
+# Tải cấu hình từ file .env (An toàn khi đẩy lên GitHub và server)
+load_dotenv()
+
+DB_USER = os.environ.get('DB_USER', 'root')
+DB_PASSWORD = os.environ.get('DB_PASSWORD', '200905')
+DB_HOST = os.environ.get('DB_HOST', 'localhost')
+DB_PORT = os.environ.get('DB_PORT', '3306')
+DB_NAME = os.environ.get('DB_NAME', 'ats_db')
 
 engine = create_engine(f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset=utf8mb4")
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Nối đường dẫn an toàn đa nền tảng
+# Nối đường dẫn an toàn đa nền tảng (Bây giờ sẽ là Thư_mục_gốc/data/processed/clean_all_jobs.csv)
 input_file = os.path.join(BASE_DIR, 'data', 'processed', 'clean_all_jobs.csv')
 
 try:
@@ -46,28 +50,34 @@ try:
     columns_in_sql = list(column_mapping.values())
     df = df[[col for col in columns_in_sql if col in df.columns]]
 
-    # Xử lý Rỗng (NULL)
-    df = df.replace({np.nan: None})
+    # ==============================================================
+    # QUY TRÌNH XỬ LÝ DỮ LIỆU ĐÚNG THỨ TỰ CHO MYSQL
+    # ==============================================================
 
-    # Ép kiểu dữ liệu an toàn
+    # BƯỚC 1: Ép kiểu dữ liệu an toàn (Biến các chuỗi lỗi thành NaN)
     if 'salary_min' in df.columns:
         df['salary_min'] = pd.to_numeric(df['salary_min'], errors='coerce')
     if 'salary_max' in df.columns:
         df['salary_max'] = pd.to_numeric(df['salary_max'], errors='coerce')
 
-    # --- [ĐIỂM SỬA CHỮA QUAN TRỌNG CHO MYSQL] ---
-
-    # 1. Chuyển Boolean thành Integer (0 hoặc 1) cho khớp kiểu BOOLEAN (TINYINT) trong MySQL
+    # BƯỚC 2: Chuyển Boolean thành Integer (0 hoặc 1)
     if 'is_negotiable' in df.columns:
         df['is_negotiable'] = df['is_negotiable'].fillna(False).astype(int)
     if 'is_remote' in df.columns:
         df['is_remote'] = df['is_remote'].fillna(False).astype(int)
 
-    # 2. Chuyển đổi định dạng Date sang YYYY-MM-DD cho khớp kiểu DATE
+    # BƯỚC 3: Chuyển đổi định dạng Date sang YYYY-MM-DD
     if 'posted_date' in df.columns:
         df['posted_date'] = pd.to_datetime(df['posted_date'], errors='coerce', format='mixed').dt.strftime('%Y-%m-%d')
     if 'crawled_at' in df.columns:
         df['crawled_at'] = pd.to_datetime(df['crawled_at'], errors='coerce', format='mixed').dt.strftime('%Y-%m-%d')
+
+    # BƯỚC 4 (QUAN TRỌNG NHẤT): Xử lý Rỗng (NULL) ở khâu cuối cùng
+    # Đảm bảo tất cả NaN sinh ra từ 3 bước trên đều được chuyển thành None (NULL trong SQL)
+    df = df.replace({np.nan: None})
+    df = df.where(pd.notnull(df), None)
+
+    # ==============================================================
 
     print(f"\n--- ĐANG XÓA SẠCH DỮ LIỆU CŨ TẠI BẢNG Job_Postings ---")
     with engine.begin() as conn:
