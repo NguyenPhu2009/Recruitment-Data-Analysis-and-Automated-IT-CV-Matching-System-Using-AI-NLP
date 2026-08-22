@@ -47,11 +47,11 @@ def match_cv():
 
     file.save(filepath)
 
-    cv_text = extract_text_from_cv(filepath)
-
-    # Xóa file ngay sau khi lấy xong text
-    if os.path.exists(filepath):
-        os.remove(filepath)
+    try:
+        cv_text = extract_text_from_cv(filepath)
+    finally:
+        if os.path.exists(filepath):
+            os.remove(filepath)
 
     if not cv_text or len(cv_text.strip()) < 50:
         return jsonify({
